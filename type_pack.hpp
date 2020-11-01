@@ -8,30 +8,24 @@ struct is_present {
 };
 
 template <class T, class Tuple>
-struct Index;
+struct tuple_index;
+
+template <class T>
+struct tuple_index<T, std::tuple<>> {
+	static const int value = -1;
+};
 
 template <class T, class... Types>
-struct Index<T, std::tuple<T, Types...>> {
+struct tuple_index<T, std::tuple<T, Types...>> {
 	static const int value = 0;
 };
 
-template <class T, class U, class... Types>
-struct Index<T, std::tuple<U, Types...>> {
+template <class T, class U, class ... Types>
+struct tuple_index<T, std::tuple<U, Types...>> {
 
-	template<typename What, typename ... Looking>
-	static constexpr int Value()
-	{
-		if constexpr (is_present<What, Looking...>::value)
-		{
-			return 1 + Index<What, std::tuple<Looking...>>::value;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	static constexpr int value = Value<T, Types...>();
+	static constexpr int value = std::conditional_t<is_present<T, Types...>::value, 
+		std::integral_constant<int, 1 + tuple_index<T, std::tuple<Types...>>::value>,
+		std::integral_constant<int, -1>>();
 };
 
 template <class... Args>
@@ -41,17 +35,17 @@ struct type_pack
 	using type_t = typename std::tuple_element<N, std::tuple<Args...>>::type;
 
 	template<typename T>
-	using index_t = Index<T, std::tuple<Args...>>;
+	using index_t = tuple_index<T, std::tuple<Args...>>;
 };
 
 template<typename Tuple, int index = std::tuple_size_v<Tuple>-1, typename ... Types>
-struct tuple_unpack
+struct tuple_to_type_pack
 {
-	using type_t = typename tuple_unpack<Tuple, index - 1, std::tuple_element_t<index, Tuple>, Types...>::type_t;
+	using type_t = typename tuple_to_type_pack<Tuple, index - 1, std::tuple_element_t<index, Tuple>, Types...>::type_t;
 };
 
 template<typename Tuple, typename ... Types>
-struct tuple_unpack<Tuple, -1, Types...>
+struct tuple_to_type_pack<Tuple, -1, Types...>
 {
 	using type_t = type_pack<Types...>;
 };
