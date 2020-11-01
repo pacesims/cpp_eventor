@@ -51,7 +51,7 @@ class TypeBError { std::string name = "TYPEB"; };
 class TypeCError { std::string name = "TYPEC"; };
 
 using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
-using standalone_eventor = eventor<error_pack>;
+using standalone_eventor = eventor<error_pack, false>; //We want to allow public access to raise, so pass in false
 
 int main()
 {	
