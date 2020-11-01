@@ -108,19 +108,19 @@ int main()
 {	
 	SomeSystemClass sys;
 
-	auto token = sys.register_callback<TypeAError>([](TypeAError& error)
+	auto token_a = sys.register_callback<TypeAError>([](TypeAError& error)
 		{
 			std::cout << "Got Error A." << std::endl;
 		});
 
-	token = sys.register_callback<EventB>([](EventB& error)
+	auto token_b = sys.register_callback<EventB>([](EventB& error)
 		{
 			std::cout << "Got Event B." << std::endl;
 		});
 
 	sys.test_raise();
 
-	sys.un_register_callback<TypeAError>(token);
+	sys.un_register_callback<TypeAError>(token_a);
 
 	sys.test_raise();
 }
