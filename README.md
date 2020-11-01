@@ -5,13 +5,15 @@ Header only, so only step should be to include the Eventor header and start usin
 
 Example 1, as a base class:
 ```cpp
+using namespace events;
+
 class TypeAError { std::string name = "TYPEA"; };
 class TypeBError { std::string name = "TYPEB"; };
 class TypeCError { std::string name = "TYPEC"; };
 
 using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
 
-class SomeSystemClass : public Eventor<error_pack>
+class SomeSystemClass : public eventor<error_pack>
 {
 public:
 
@@ -42,12 +44,14 @@ int main()
 
 Example 2, Standalone:
 ```cpp
+using namespace events;
+
 class TypeAError { std::string name = "TYPEA"; };
 class TypeBError { std::string name = "TYPEB"; };
 class TypeCError { std::string name = "TYPEC"; };
 
 using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
-using standalone_eventor = Eventor<error_pack>;
+using standalone_eventor = eventor<error_pack>;
 
 int main()
 {	
@@ -64,6 +68,8 @@ int main()
 ```
 Example 3, Multiple inheritance 
 ```cpp
+using namespace events;
+
 class TypeAError { std::string name = "TYPEA"; };
 class TypeBError { std::string name = "TYPEB"; };
 class TypeCError { std::string name = "TYPEC"; };
@@ -75,16 +81,16 @@ class EventC {};
 using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
 using events = std::tuple<EventA, EventB, EventC>;
 
-class SomeSystemClass : public Eventor<error_pack>, public Eventor<events>
+class SomeSystemClass : public eventor<error_pack>, public eventor<events>
 {
 public:
-	using Eventor<error_pack>::raise_event;
-	using Eventor<error_pack>::register_callback;
-	using Eventor<error_pack>::un_register_callback;
+	using eventor<error_pack>::raise_event;
+	using eventor<error_pack>::register_callback;
+	using eventor<error_pack>::un_register_callback;
 
-	using Eventor<events>::raise_event;
-	using Eventor<events>::register_callback;
-	using Eventor<events>::un_register_callback;
+	using eventor<events>::raise_event;
+	using eventor<events>::register_callback;
+	using eventor<events>::un_register_callback;
 
 	void test_raise()
 	{
