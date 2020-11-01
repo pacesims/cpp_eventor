@@ -62,3 +62,60 @@ int main()
 	eventor.raise_event(TypeAError{});
 }
 ```
+Example 3, Multiple inheritance 
+```cpp
+class TypeAError { std::string name = "TYPEA"; };
+class TypeBError { std::string name = "TYPEB"; };
+class TypeCError { std::string name = "TYPEC"; };
+
+class EventA {};
+class EventB {};
+class EventC {};
+
+using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
+using events = std::tuple<EventA, EventB, EventC>;
+
+class SomeSystemClass : public Eventor<error_pack>, public Eventor<events>
+{
+public:
+	using Eventor<error_pack>::raise_event;
+	using Eventor<error_pack>::register_callback;
+	using Eventor<error_pack>::un_register_callback;
+
+	using Eventor<events>::raise_event;
+	using Eventor<events>::register_callback;
+	using Eventor<events>::un_register_callback;
+
+	void test_raise()
+	{
+		raise_event(TypeAError{});
+		raise_event(TypeBError{});
+		raise_event(TypeCError{});
+
+		raise_event(EventA{});
+		raise_event(EventB{});
+		raise_event(EventC{});
+	}
+};
+
+int main()
+{	
+	SomeSystemClass sys;
+
+	auto token = sys.register_callback<TypeAError>([](TypeAError& error)
+		{
+			std::cout << "Got Error A." << std::endl;
+		});
+
+	token = sys.register_callback<EventB>([](EventB& error)
+		{
+			std::cout << "Got Event B." << std::endl;
+		});
+
+	sys.test_raise();
+
+	sys.un_register_callback<TypeAError>(token);
+
+	sys.test_raise();
+}
+```
