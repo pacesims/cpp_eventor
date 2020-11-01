@@ -32,7 +32,7 @@ template <class... Args>
 struct type_pack
 {
 	template <std::size_t N>
-	using type_t = typename std::tuple_element<N, std::tuple<Args...>>::type;
+	using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
 
 	template<typename T>
 	using index_t = tuple_index<T, std::tuple<Args...>>;
@@ -41,11 +41,11 @@ struct type_pack
 template<typename Tuple, int index = std::tuple_size_v<Tuple>-1, typename ... Types>
 struct tuple_to_type_pack
 {
-	using type_t = typename tuple_to_type_pack<Tuple, index - 1, std::tuple_element_t<index, Tuple>, Types...>::type_t;
+	using type = typename tuple_to_type_pack<Tuple, index - 1, std::tuple_element_t<index, Tuple>, Types...>::type;
 };
 
 template<typename Tuple, typename ... Types>
 struct tuple_to_type_pack<Tuple, -1, Types...>
 {
-	using type_t = type_pack<Types...>;
+	using type = type_pack<Types...>;
 };

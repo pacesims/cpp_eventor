@@ -16,7 +16,7 @@ namespace events
 		template<typename ... Ts>
 		struct type_pack_conversion<std::tuple<Ts...>>
 		{
-			using type = typename tuple_to_type_pack<std::tuple<Ts...>>::type_t;
+			using type = typename tuple_to_type_pack<std::tuple<Ts...>>::type;
 		};
 
 		template<typename ... Ts>

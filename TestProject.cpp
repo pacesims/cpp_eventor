@@ -2,7 +2,6 @@
 #include <functional>
 #include <map>
 
-#include "type_pack.hpp"
 #include "events.h"
 
 using namespace events;
