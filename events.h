@@ -26,7 +26,7 @@ namespace events
 		};
 	}
 
-	template<typename Pack>
+	template<typename Pack, bool protected_raise = true>
 	class eventor
 	{
 		template<typename Event>
@@ -62,7 +62,18 @@ namespace events
 		}
 
 		template<typename Event>
-		std::enable_if_t<index_t<Event>::value >= 0> raise_event(const Event& type)
+		std::enable_if_t<index_t<Event>::value >= 0 && !protected_raise> raise_event(const Event& type)
+		{
+			for (auto& [token, cb] : callbacks_[index_t<Event>::value])
+			{
+				cb(type);
+			}
+		}
+
+	protected:
+
+		template<typename Event>
+		std::enable_if_t<index_t<Event>::value >= 0 && protected_raise> raise_event(const Event& type)
 		{
 			for (auto& [token, cb] : callbacks_[index_t<Event>::value])
 			{

@@ -40,9 +40,15 @@ public:
 	}
 };
 
+
+using standalone_events = eventor<error_pack, false>;
 int main()
 {	
 	SomeSystemClass sys;
+
+	standalone_events events;
+
+	events.raise_event(TypeAError{});
 
 	auto token = sys.register_callback<TypeAError>([](const TypeAError& error)
 		{
