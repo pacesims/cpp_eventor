@@ -1,6 +1,8 @@
 # cpp_eventor
 A simple C++ Event system
 
+Header only, so only step should be to include the Eventor header and start using. Events must be distinct types.
+
 Example 1, as a base class:
 ```cpp
 class TypeAError { std::string name = "TYPEA"; };
