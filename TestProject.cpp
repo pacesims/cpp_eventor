@@ -2,20 +2,13 @@
 #include <functional>
 #include <map>
 
+#include "event_packs.h"
 #include "events.h"
 
+
+#include "test.h"
+
 using namespace events;
-
-class TypeAError { std::string name = "TYPEA"; };
-class TypeBError { std::string name = "TYPEB"; };
-class TypeCError { std::string name = "TYPEC"; };
-
-class EventA {};
-class EventB {};
-class EventC {};
-
-using error_pack = std::tuple<TypeAError, TypeBError, TypeCError>;
-using normal_events = std::tuple<EventA, EventB, EventC>;
 
 class SomeSystemClass : public eventor<error_pack>, public eventor<normal_events>
 {
@@ -40,11 +33,25 @@ public:
 	}
 };
 
+using static_errors = static_eventor<error_pack, false>;
 
 using standalone_events = eventor<error_pack, false>;
+
 int main()
 {	
+	{
+		std::vector<A> listeners(3);
+		static_errors::raise_event(TypeAError{});
+	}
+
 	SomeSystemClass sys;
+
+	static_errors::register_callback<TypeAError>([](const TypeAError& error)
+		{
+			std::cout << "Got Static Error A." << std::endl;
+		});
+
+	static_errors::raise_event(TypeAError{});
 
 	standalone_events events;
 
