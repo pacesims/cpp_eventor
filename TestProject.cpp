@@ -33,7 +33,7 @@ public:
 	}
 };
 
-using static_errors = static_eventor<error_pack, false>;
+using static_errors = static_eventor<error_pack>;
 
 using standalone_events = eventor<error_pack, false>;
 

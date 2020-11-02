@@ -6,7 +6,7 @@
 
 class A
 {
-	using errors = events::static_eventor<error_pack, false>;
+	using errors = events::static_eventor<error_pack>;
 public:
 	A()
 	{

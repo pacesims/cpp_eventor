@@ -105,7 +105,7 @@ namespace events
 		std::map<int, std::vector<std::pair<uint64_t, std::function<void(std::any)>>>> callbacks_ = {};
 	};
 
-	template<typename Pack, bool protected_raise = true>
+	template<typename Pack>
 	class static_eventor
 	{
 		static_assert(details::is_tuple<Pack>::value, "Pack must be a tuple of event types.");
@@ -146,18 +146,7 @@ namespace events
 		}
 
 		template<typename Event>
-		inline static std::enable_if_t<index_t<Event>::value >= 0 && !protected_raise> raise_event(const Event& type)
-		{
-			for (auto& [token, cb] : callbacks_[index_t<Event>::value])
-			{
-				cb(type);
-			}
-		}
-
-	protected:
-
-		template<typename Event>
-		inline static std::enable_if_t<index_t<Event>::value >= 0 && protected_raise> raise_event(const Event& type)
+		inline static std::enable_if_t<index_t<Event>::value >= 0> raise_event(const Event& type)
 		{
 			for (auto& [token, cb] : callbacks_[index_t<Event>::value])
 			{
