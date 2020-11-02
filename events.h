@@ -4,33 +4,53 @@
 #include <type_traits>
 #include <any>
 
-#include "type_pack.hpp"
-
 namespace events
 {
 	namespace details
 	{
+		template<typename T, typename ... Ts>
+		struct is_present {
+			static constexpr bool value{ (std::is_same_v<T, Ts> || ...) };
+		};
+
+		template <class T, class Tuple>
+		struct tuple_index;
+
+		template <class T>
+		struct tuple_index<T, std::tuple<>> {
+			static const int value = -1;
+		};
+
+		template <class T, class... Types>
+		struct tuple_index<T, std::tuple<T, Types...>> {
+			static const int value = 0;
+		};
+
+		template <class T, class U, class ... Types>
+		struct tuple_index<T, std::tuple<U, Types...>> {
+
+			static constexpr int value = std::conditional_t<is_present<T, Types...>::value,
+				std::integral_constant<int, 1 + tuple_index<T, std::tuple<Types...>>::value>,
+				std::integral_constant<int, -1>>();
+		};
+
 		template<typename T>
-		struct type_pack_conversion;
+		struct is_tuple : std::false_type {};
 
 		template<typename ... Ts>
-		struct type_pack_conversion<std::tuple<Ts...>>
-		{
-			using type = typename tuple_to_type_pack<std::tuple<Ts...>>::type;
-		};
-
-		template<typename ... Ts>
-		struct type_pack_conversion<type_pack<Ts...>>
-		{
-			using type = type_pack<Ts...>;
-		};
+		struct is_tuple<std::tuple<Ts...>> : std::true_type {};
 	}
 
 	template<typename Pack, bool protected_raise = true>
 	class eventor
 	{
-		template<typename Event>
-		using index_t = typename details::type_pack_conversion<Pack>::type::template index_t<Event>;
+		static_assert(details::is_tuple<Pack>::value, "Pack must be a tuple of event types.");
+
+		template <std::size_t N>
+		using type = typename std::tuple_element<N, Pack>::type;
+
+		template<typename T>
+		using index_t = details::tuple_index<T, Pack>;
 
 	public:
 		template<typename Event>
